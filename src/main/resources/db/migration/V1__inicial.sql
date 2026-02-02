@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tb_artista (
                                           id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-                                          descricao VARCHAR(255) NOT NULL,
+                                          nome VARCHAR(255) NOT NULL,
                                           modalidade SMALLINT NOT NULL CHECK (modalidade IN (0, 1))
     );
 
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS tb_artista_album (
     PRIMARY KEY (artista_id, album_id)
     );
 
-INSERT INTO tb_artista (descricao, modalidade) VALUES
+INSERT INTO tb_artista (nome, modalidade) VALUES
                                        ('Serj Tankian', 0),
                                        ( 'Mike Shinoda', 0),
                                        ( 'Michel Teló', 0),

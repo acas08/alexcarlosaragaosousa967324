@@ -10,7 +10,6 @@ import org.modelmapper.ModelMapper;
 public class AlbumDto {
 
     private String descricao;
-    private Long idArtista;
 
     public static Album toEntity(AlbumDto albumDto) {
         var modelMapper = new ModelMapper();

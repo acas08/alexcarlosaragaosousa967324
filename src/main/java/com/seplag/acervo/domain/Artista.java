@@ -1,8 +1,14 @@
 package com.seplag.acervo.domain;
 
+import com.seplag.acervo.enumeradores.ModalidadeEnum;
+import com.seplag.acervo.enumeradores.ModalidadeEnumConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,5 +21,12 @@ public class Artista {
     private Long id;
 
     @Column
-    private String descricao;
+    private String nome;
+
+    @Convert(converter = ModalidadeEnumConverter.class)
+    @Column(name = "modalidade", nullable = false)
+    private ModalidadeEnum modalidade;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "artistas")
+    private Set<Album> albuns;
 }

@@ -1,9 +1,13 @@
 package com.seplag.acervo.dto;
 
 import com.seplag.acervo.domain.Album;
+import lombok.Getter;
+import lombok.Setter;
 import org.modelmapper.ModelMapper;
 
-public class AlbumCompletoDto extends ArtistaDto{
+@Getter
+@Setter
+public class AlbumCompletoDto extends AlbumDto{
 
     private Long id;
 

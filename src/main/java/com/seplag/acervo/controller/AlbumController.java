@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/albuns")
@@ -34,6 +36,9 @@ public class AlbumController {
 
     @Autowired
     private AlbumImagemService albumImagemService;
+
+    @Value("${minio.expiry-seconds:1800}")
+    private int expirySeconds;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -79,6 +84,15 @@ public class AlbumController {
             @RequestParam("files") List<MultipartFile> files
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(albumImagemService.armazenarImagens(albumId, files));
+    }
+
+    @GetMapping("solicitarLink/{id}")
+    public ResponseEntity<Map<String, Object>> solicitarLink(@PathVariable("id") Long id) {
+        String url = albumImagemService.gerarLinkPreAssinado(id);
+        return ResponseEntity.ok(Map.of(
+                "url", url,
+                "expiresInSeconds", expirySeconds
+        ));
     }
 
 

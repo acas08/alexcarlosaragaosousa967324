@@ -28,6 +28,9 @@ public class Album {
     )
     private Set<Artista> artistas;
 
+    @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<AlbumImagem> imagens;
+
     public Album() {}
 
     

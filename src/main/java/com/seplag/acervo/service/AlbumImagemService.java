@@ -5,11 +5,9 @@ import com.seplag.acervo.domain.AlbumImagem;
 import com.seplag.acervo.dto.AlbumImagemDto;
 import com.seplag.acervo.repository.AlbumImagemRepository;
 import com.seplag.acervo.repository.AlbumRepository;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,21 +22,27 @@ import java.util.UUID;
 @Service
 public class AlbumImagemService {
 
-    private final MinioClient minioClient;
+    private final MinioClient minioInternalClient;
+    private final MinioClient minioPublicClientAssinador;
     private final AlbumRepository albumRepository;
     private final AlbumImagemRepository imagemRepository;
     private final String bucket;
+    private final int expirySeconds;
 
     public AlbumImagemService(
-            MinioClient minioClient,
+            MinioClient minioInternalClient,
+            MinioClient minioPublicClientAssinador,
             AlbumRepository albumRepository,
             AlbumImagemRepository imagemRepository,
-            @Value("${minio.bucket}") String bucket
+            @Value("${minio.bucket}") String bucket,
+            @Value("${minio.expiry-seconds:1800}") int expirySeconds
     ) {
-        this.minioClient = minioClient;
+        this.minioInternalClient = minioInternalClient;
+        this.minioPublicClientAssinador = minioPublicClientAssinador;
         this.albumRepository = albumRepository;
         this.imagemRepository = imagemRepository;
         this.bucket = bucket;
+        this.expirySeconds = expirySeconds;
     }
 
     @Transactional
@@ -51,9 +55,9 @@ public class AlbumImagemService {
         }
 
         try {
-            boolean exists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+            boolean exists = minioInternalClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
             if (!exists) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+                minioInternalClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
             }
         } catch (Exception e) {
             throw new RuntimeException("Não foi possível validar/criar o bucket no MinIO.", e);
@@ -63,11 +67,11 @@ public class AlbumImagemService {
 
         for (MultipartFile file : files) {
 
-            String objectKey = "albuns/" + albumId + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+            String objectKey = "albuns_" + albumId + "_" + UUID.randomUUID();
 
 
             try {
-                minioClient.putObject(
+                minioInternalClient.putObject(
                         PutObjectArgs.builder()
                                 .bucket(bucket)
                                 .object(objectKey)
@@ -91,7 +95,26 @@ public class AlbumImagemService {
             listaAlbumImagemDto.add(AlbumImagemDto.toDto(albumImagemSalvo));
         }
 
-        return listaAlbumImagemDto;
+        return listaAlbumImagemDto  ;
+    }
+
+    public String gerarLinkPreAssinado(Long albumImagemId) {
+
+        AlbumImagem albumImagem = imagemRepository.findById(albumImagemId)
+                .orElseThrow(() -> new IllegalArgumentException("AlbumImagem não encontrado com o ID: " + albumImagemId));
+
+        try {
+            return minioPublicClientAssinador.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucket)
+                            .object(albumImagem.getChaveRegistro())
+                            .expiry(expirySeconds)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new IllegalStateException("Falha ao gerar URL pré-assinada para download", e);
+        }
     }
 
 }

@@ -3,7 +3,9 @@ package com.seplag.acervo.controller;
 import com.seplag.acervo.domain.Album;
 import com.seplag.acervo.dto.AlbumCompletoDto;
 import com.seplag.acervo.dto.AlbumDto;
+import com.seplag.acervo.dto.AlbumImagemDto;
 import com.seplag.acervo.enumeradores.ModalidadeEnum;
+import com.seplag.acervo.service.AlbumImagemService;
 import com.seplag.acervo.service.AlbumService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,6 +31,9 @@ public class AlbumController {
 
     @Autowired
     private AlbumService albumService;
+
+    @Autowired
+    private AlbumImagemService albumImagemService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
@@ -61,4 +67,19 @@ public class AlbumController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "descricao"));
         return albumService.buscarPorModalidadeArtista(modalidade, pageable);
     }
+
+    @PostMapping(
+            value = "/{id}/imagens",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "Anexar 1 ou mais imagens ao álbum (MinIO)")
+    public ResponseEntity<List<AlbumImagemDto>> anexarImagens(
+            @PathVariable("id") Long albumId,
+            @RequestParam("files") List<MultipartFile> files
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(albumImagemService.armazenarImagens(albumId, files));
+    }
+
+
 }

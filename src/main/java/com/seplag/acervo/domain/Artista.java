@@ -3,7 +3,9 @@ package com.seplag.acervo.domain;
 import com.seplag.acervo.enumeradores.ModalidadeEnum;
 import com.seplag.acervo.enumeradores.ModalidadeEnumConverter;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -14,6 +16,8 @@ import java.util.Set;
 @Setter
 @Table(name = "tb_artista")
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Artista {
 
     @Id

@@ -13,8 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ArtistaService {
 
-    @Autowired
-    private ArtistaRepository repository;
+    private final ArtistaRepository repository;
+
+    public ArtistaService(ArtistaRepository repository) {
+        this.repository = repository;
+    }
 
     public Page<ArtistaCompletoDto> findAll(Pageable pageable) {
 

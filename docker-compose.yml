@@ -19,6 +19,11 @@ services:
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
 
+      LOGIN_USER: ${LOGIN_USER}
+      LOGIN_PASSWORD: ${LOGIN_PASSWORD}
+
+      JWT_SECRET: ${JWT_SECRET}
+
   postgres:
     image: postgres:16
     environment:

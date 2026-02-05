@@ -39,7 +39,7 @@ public class ArtistaControllerV1 {
 
     @GetMapping(value = "/listar", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-            summary = "Buscar artistas por nome paginado",
+            summary = "Consultas por nome do artista com ordenação alfabética (asc/desc)",
             description = "Retorna uma página de artistas filtrando por nome (contém) e ordenando por nome asc."
     )
     public Page<ArtistaCompletoDto> buscarPorNome(

@@ -28,8 +28,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(AlbumController.class)
-class AlbumControllerTest {
+@WebMvcTest(AlbumControllerV1.class)
+class AlbumControllerV1Test {
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,7 +52,7 @@ class AlbumControllerTest {
         Page<AlbumCompletoDto> page = new PageImpl<>(List.of(dto));
         when(albumService.findAll(any())).thenReturn(page);
 
-        mockMvc.perform(get("/api/albuns")
+        mockMvc.perform(get("/api/v1/albuns")
                         .param("page", "0")
                         .param("size", "10")
                         .accept(APPLICATION_JSON))
@@ -72,7 +72,7 @@ class AlbumControllerTest {
 
         when(albumService.save(any(Album.class))).thenReturn(salvo);
 
-        mockMvc.perform(post("/api/albuns")
+        mockMvc.perform(post("/api/v1/albuns")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body))
                         .accept(APPLICATION_JSON))
@@ -89,7 +89,7 @@ class AlbumControllerTest {
         when(albumService.buscarPorModalidadeArtista(eq(ModalidadeEnum.CANTOR), any()))
                 .thenReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/api/albuns/listarPorModalidade")
+        mockMvc.perform(get("/api/v1/albuns/listarPorModalidade")
                         .param("modalidade", "CANTOR")
                         .param("page", "0")
                         .param("size", "10")
@@ -117,7 +117,7 @@ class AlbumControllerTest {
                 "conteudo".getBytes(StandardCharsets.UTF_8)
         );
 
-        mockMvc.perform(multipart("/api/albuns/{id}/imagens", 5L)
+        mockMvc.perform(multipart("/api/v1/albuns/{id}/imagens", 5L)
                         .file(file)
                         .accept(APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -132,7 +132,7 @@ class AlbumControllerTest {
         when(albumImagemService.gerarLinkPreAssinado(7L))
                 .thenReturn("http://localhost/linkPreAssinado");
 
-        mockMvc.perform(get("/api/albuns/solicitarLink/{id}", 7L)
+        mockMvc.perform(get("/api/v1/albuns/solicitarLink/{id}", 7L)
                         .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.url").value("http://localhost/linkPreAssinado"))

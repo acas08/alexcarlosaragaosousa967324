@@ -1,6 +1,5 @@
 package com.seplag.acervo.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seplag.acervo.domain.Artista;
 import com.seplag.acervo.dto.ArtistaCompletoDto;
@@ -25,8 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(ArtistaController.class)
-class ArtistaControllerTest {
+@WebMvcTest(ArtistaControllerV1.class)
+class ArtistaControllerV1Test {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +46,7 @@ class ArtistaControllerTest {
         Page<ArtistaCompletoDto> page = new PageImpl<>(List.of(dto));
         when(artistaService.findAll(any())).thenReturn(page);
 
-        mockMvc.perform(get("/api/artistas")
+        mockMvc.perform(get("/api/v1/artistas")
                         .param("page", "0")
                         .param("size", "10")
                         .accept(APPLICATION_JSON))
@@ -61,7 +60,7 @@ class ArtistaControllerTest {
         when(artistaService.findByNomeContaining(eq("jo"), any()))
                 .thenReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/api/artistas/listar")
+        mockMvc.perform(get("/api/v1/artistas/listar")
                         .param("nome", "John Lennon")
                         .param("page", "0")
                         .param("size", "10")
@@ -86,7 +85,7 @@ class ArtistaControllerTest {
 
         when(artistaService.save(any(Artista.class))).thenReturn(salvo);
 
-        mockMvc.perform(post("/api/artistas")
+        mockMvc.perform(post("/api/v1/artistas")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body))
                         .accept(APPLICATION_JSON))
@@ -111,7 +110,7 @@ class ArtistaControllerTest {
 
         when(artistaService.atualizar(eq(7L), any(ArtistaDto.class))).thenReturn(atualizado);
 
-        mockMvc.perform(put("/api/artistas/{id}/nome", 7L)
+        mockMvc.perform(put("/api/v1/artistas/{id}/nome", 7L)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body))
                         .accept(APPLICATION_JSON))

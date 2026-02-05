@@ -15,8 +15,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(RegionalController.class)
-class RegionalControllerTest {
+@WebMvcTest(RegionalControllerV1.class)
+class RegionalControllerV1Test {
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,7 +28,7 @@ class RegionalControllerTest {
     void sincronizar() throws Exception {
         when(regionalService.sincronizar()).thenReturn(List.of());
 
-        mockMvc.perform(post("/api/regionais"))
+        mockMvc.perform(post("/api/v1/regionais"))
                 .andExpect(status().isCreated());
 
         verify(regionalService, times(1)).sincronizar();

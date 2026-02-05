@@ -62,7 +62,7 @@ public class AlbumControllerV1 {
     }
 
     @GetMapping(value = "/listarPorModalidade", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Listar álbuns por modalidade do artista (paginado)")
+    @Operation(summary = "Listar álbuns por modalidade do artista (paginado)", description = "álbuns são/tem cantores e/ou bandas (consultas parametrizadas)")
     public Page<AlbumCompletoDto> listarPorModalidade(
             @RequestParam ModalidadeEnum modalidade,
             @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -79,7 +79,7 @@ public class AlbumControllerV1 {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @Operation(summary = "Anexar 1 ou mais imagens ao álbum (MinIO)")
+    @Operation(summary = "Anexar 1 ou mais imagens ao álbum (MinIO)", description = "Upload de uma ou mais imagens de capa do álbums")
     public ResponseEntity<List<AlbumImagemDto>> anexarImagens(
             @PathVariable("id") Long albumId,
             @RequestParam("files") List<MultipartFile> files
@@ -88,6 +88,7 @@ public class AlbumControllerV1 {
     }
 
     @GetMapping("solicitarLink/{id}")
+    @Operation(summary = "Recuperação por links pré-assinados com expiração de 30 minutos", description = "A imagem deve estar armazenda no album.")
     public ResponseEntity<Map<String, Object>> solicitarLink(@PathVariable("id") Long id) {
         String url = albumImagemService.gerarLinkPreAssinado(id);
         return ResponseEntity.ok(Map.of(

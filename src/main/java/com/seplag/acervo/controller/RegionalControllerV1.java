@@ -21,7 +21,7 @@ public class RegionalControllerV1 {
     @PostMapping
     @Operation(
             summary = "Sincronizar regionais",
-            description = "Sincronizar regionais"
+            description = "Endpoint responsável por buscar as regionais do serviço externo argus da polícia civil e sincronizar com os registros que já estão salvos no banco de regionais."
     )
     public ResponseEntity<List> sincronizar() {
         return ResponseEntity.status(HttpStatus.CREATED).body(regionalService.sincronizar());

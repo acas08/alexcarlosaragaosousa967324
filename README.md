@@ -68,6 +68,34 @@ Vai ficar DOWN se qualquer um entre db, minio, argus falhar
 Utilizamos o Flyway para gerenciar as migrations.
 Os arquivos de migração estão na pasta "src/main/resources/db/migration".
 
+## MinIO (API S3)
+Utilizamos o MinIO como serviço de armazenamento de objetos, que é uma implementação de API S3 compatível.
+O MinIO é utilizado para armazenar as imagens de capa dos álbuns.
+A url para acesso ao MinIO é: http://localhost:9000
+As credenciais de acesso estão no arquivo ".env" na raiz do projeto, sendo elas:
+MINIO_USER e MINIO_PASSWORD.
+
+## Principais endpoints
+- POST Login http://localhost:8080/acervo-teste/api/auth/login
+As credenciais para obter o login estão no arquivo ".env" na raiz do projeto, sendo elas:
+  LOGIN_USER e LOGIN_PASSWORD.
+- GET http://localhost:8080/acervo/api/v1/artistas/listar
+  Consultas por nome do artista com ordenação alfabética (asc/desc)
+- PUT http://localhost:8080/acervo/api/v1/artistas/{id}/nome
+  Alteração do nome do artista.
+- POST http://localhost:8080/acervo/api/v1/albuns/{id}/imagens
+  Upload de uma ou mais imagens de capa do álbum / Armazenamento das imagens no MinIO (API S3)
+- GET http://localhost:8080/acervo/api/v1/albuns/solicitarLink/{id}
+  Recuperação por links pré-assinados com expiração de 30 minutos
+- POST http://localhost:8080/acervo/api/v1/regionais
+  Endpoint de regionais (https://integrador-argus-api.geia.vip/v1/regionais). Importar a lista para tabela interna.
+  Adicionar atributo “ativo” (regional (id integer, nome varchar(200), ativo boolean))
+  Sincronizar com menor complexidade
+1) Novo no endpoint → inserir; 
+2) Ausente no endpoint → inativar; 
+3) Atributo alterado → inativar antigo e criar novo registro. 
+
+
 ## Tecnologias utilizadas
 - Java 17
 - Spring Boot 
